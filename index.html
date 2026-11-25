@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Nueva York en familia</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: columna única tipo «hoja de ruta»; cabecera con franja de metro, tarjetas de reservas en rejilla y día a día como líneas de metro. */
+:root{
+  --bg:#f3f5f8; --surface:#ffffff; --ink:#141b2b; --muted:#5b6578; --line:#dde2ea;
+  --accent:#ff6319;          /* naranja de la línea B/D/F/M (6.ª Avenida) */
+  --accent-ink:#b8420c;
+  --blue:#0039a6;            /* línea A/C/E */
+  --green:#00933c; --yellow:#fccc0a; --red:#ee352e;
+  --warn-bg:#fff4e5; --warn-ink:#8a4b00;
+  --display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0e131d; --surface:#161d2b; --ink:#e8ecf3; --muted:#9aa4b6; --line:#273246;
+  --accent:#ff7a3a; --accent-ink:#ffa070; --blue:#5b8cff;
+  --warn-bg:#3a2a12; --warn-ink:#ffcf8a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e131d; --surface:#161d2b; --ink:#e8ecf3; --muted:#9aa4b6; --line:#273246;
+  --accent:#ff7a3a; --accent-ink:#ffa070; --blue:#5b8cff;
+  --warn-bg:#3a2a12; --warn-ink:#ffcf8a; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 48px}
+.wrap{max-width:960px;margin:0 auto;display:flex;flex-direction:column;gap:36px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.05}
+a{color:var(--blue)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+
+/* Cabecera */
+header{padding-top:32px;display:flex;flex-direction:column;gap:14px}
+.stripe{display:flex;gap:6px}
+.stripe span{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font:700 14px var(--body);color:#fff}
+h1{font-size:clamp(44px,9vw,78px);font-weight:700;letter-spacing:-.01em}
+h1 em{font-style:normal;color:var(--accent)}
+.sub{font-size:17px;color:var(--muted);max-width:60ch}
+.who{display:flex;flex-wrap:wrap;gap:8px}
+.who span{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 12px;font-size:14px}
+
+/* Resumen */
+.facts{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.fact{background:var(--surface);padding:14px 16px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.fact b{font-family:var(--display);font-size:24px;font-weight:600;line-height:1.1}
+.fact small{color:var(--muted);font-size:13px}
+
+/* Avisos */
+.alerts{display:flex;flex-direction:column;gap:8px}
+.alert{background:var(--warn-bg);color:var(--warn-ink);border-radius:10px;padding:10px 14px;font-size:14px}
+.alert strong{font-weight:600}
+
+/* Secciones */
+section{display:flex;flex-direction:column;gap:14px}
+h2{font-size:32px;font-weight:600;display:flex;align-items:center;gap:10px}
+h2 .dot{width:14px;height:14px;border-radius:50%;background:var(--accent);flex:none}
+
+/* Vuelos */
+.flights{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.pass{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.pass-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.route{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px}
+.route .end{display:flex;flex-direction:column;min-width:0}
+.route .end:last-child{text-align:right}
+.iata{font-family:var(--display);font-size:46px;font-weight:700;line-height:1}
+.route .plane{color:var(--muted);font-size:13px;text-align:center;white-space:nowrap}
+.time{font-family:var(--mono);font-size:18px}
+.meta{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--muted);border-top:1px dashed var(--line);padding-top:12px}
+.meta b{color:var(--ink);font-weight:500}
+
+/* Reservas */
+.bookings{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.card h3{font-size:26px;font-weight:600}
+.rows{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:14px;margin:0}
+.rows dt{color:var(--muted)}
+.rows dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.chip{display:inline-block;font-size:12px;font-weight:600;border-radius:999px;padding:2px 10px}
+.chip.ok{background:color-mix(in srgb,var(--green) 16%,transparent);color:var(--green)}
+.chip.pend{background:var(--warn-bg);color:var(--warn-ink)}
+.links{display:flex;flex-wrap:wrap;gap:8px;margin-top:auto;padding-top:6px}
+.links a{font-size:13px;font-weight:500;text-decoration:none;border:1px solid var(--line);border-radius:8px;padding:6px 10px}
+.links a:hover{border-color:var(--blue)}
+
+/* Día a día */
+.days{display:flex;flex-direction:column;gap:0}
+.day{display:grid;grid-template-columns:52px 1fr;gap:16px;position:relative}
+.day::before{content:"";position:absolute;left:25px;top:0;bottom:0;width:4px;background:var(--line)}
+.day:first-child::before{top:26px}
+.day:last-child::before{bottom:auto;height:26px}
+.bullet{width:52px;height:52px;border-radius:50%;background:var(--c,var(--accent));color:#fff;display:grid;place-items:center;
+  font:700 20px var(--display);position:relative;z-index:1;border:4px solid var(--bg)}
+.day-body{padding-bottom:26px;min-width:0}
+.day-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;margin-top:10px}
+.day-head h3{font-size:26px;font-weight:600}
+.day-head .tag{font-size:13px;color:var(--muted)}
+.day.today .day-body{background:var(--surface);border:1px solid var(--accent);border-radius:12px;padding:4px 14px 14px;margin-bottom:20px}
+.today-pill{display:none;background:var(--accent);color:#fff;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:999px;padding:2px 8px}
+.day.today .today-pill{display:inline-block}
+.wx{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin:8px 0 0;font-size:13px;color:var(--muted)}
+.wx .ico{font-size:20px;line-height:1}
+.wx .temp{font-family:var(--mono);font-size:15px;color:var(--ink)}
+.wx .temp small{color:var(--muted);font-size:13px}
+.wx .bad{color:var(--warn-ink);background:var(--warn-bg);border-radius:6px;padding:1px 8px;font-weight:500}
+.slots{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
+.slots li{display:grid;grid-template-columns:96px 1fr;gap:12px;font-size:14px}
+.slots .when{font-family:var(--mono);font-size:13px;color:var(--muted);padding-top:1px}
+.slots .key{font-weight:600}
+.slots .note{color:var(--muted)}
+
+/* Desfile: vista aparte, solo con #desfile */
+.wrap > #desfile{display:none}
+body.view-desfile .wrap > *:not(#desfile){display:none}
+body.view-desfile .wrap > #desfile{display:flex;padding-top:28px}
+.back{align-self:flex-start;font-size:14px;font-weight:500;text-decoration:none;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:6px 12px}
+.slots a{font-weight:500}
+/* Sitios navideños */
+.xmas{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.place{background:var(--surface);padding:14px 16px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.place-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.place h3{font-size:20px;font-weight:600}
+.place p{margin:0;font-size:14px}
+.place .addr{color:var(--muted);font-size:13px}
+.place a{font-size:13px;font-weight:500;margin-top:auto}
+.chip.off{background:var(--bg);color:var(--muted);border:1px solid var(--line)}
+.chip{white-space:nowrap}
+/* Desfile */
+.parade{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.spot{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.spot.pick{border-color:var(--accent)}
+.spot-head{display:flex;align-items:center;gap:10px}
+.rank{width:30px;height:30px;border-radius:50%;background:var(--line);color:var(--ink);display:grid;place-items:center;font:700 16px var(--display);flex:none}
+.spot.pick .rank{background:var(--accent);color:#fff}
+.spot h3{font-size:22px;font-weight:600}
+.facts-mini{display:flex;flex-wrap:wrap;gap:6px}
+.facts-mini span{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:2px 9px;color:var(--muted)}
+.facts-mini b{color:var(--ink);font-weight:600}
+.route-steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;font-size:14px}
+.route-steps li{display:grid;grid-template-columns:28px 1fr;gap:8px;align-items:start}
+.line{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font:700 13px var(--body);color:#fff;background:var(--muted)}
+.line.walk{background:var(--line);color:var(--ink);font-size:14px}
+.pros{font-size:13px;color:var(--muted);border-top:1px dashed var(--line);padding-top:8px;margin:0}
+.parade-note{font-size:14px;color:var(--muted);margin:0;max-width:75ch}
+
+/* Fuera de fechas */
+.out{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}
+.out div{border:1px dashed var(--line);border-radius:10px;padding:10px 12px;font-size:14px;color:var(--muted)}
+.out b{color:var(--ink);font-weight:500;display:block}
+
+footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
+
+@media (max-width:760px){.facts{grid-template-columns:1fr}}
+@media (max-width:520px){
+  .iata{font-size:38px}
+  .slots li{grid-template-columns:1fr;gap:0}
+  .day{grid-template-columns:40px 1fr;gap:12px}
+  .bullet{width:40px;height:40px;font-size:16px}
+  .day::before{left:18px}
+  .day:first-child::before{top:20px}
+  .day:last-child::before{height:20px}
+}
+@media (prefers-reduced-motion:no-preference){.day.today .bullet{animation:pulse 2.4s ease-in-out infinite}}
+@keyframes pulse{50%{box-shadow:0 0 0 6px color-mix(in srgb,var(--accent) 30%,transparent)}}
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+
+<header>
+  <div class="stripe" aria-hidden="true">
+    <span style="background:var(--accent)">B</span><span style="background:var(--accent)">D</span><span style="background:var(--accent)">F</span><span style="background:var(--accent)">M</span><span style="background:var(--blue)">A</span><span style="background:var(--red)">1</span>
+  </div>
+  <h1>Nueva York <em>en familia</em></h1>
+</header>
+
+<div class="facts">
+  <div class="fact"><span class="label">Mié 25 · Llegada</span><b>✈️ JFK 19:15</b><small>Noche en el hotel, en Chelsea</small></div>
+  <div class="fact"><span class="label">Jue 26 · Acción de Gracias</span><b>🦃 Desfile de Macy's</b><small>Cena en Anto a las 19:00</small></div>
+  <div class="fact"><span class="label">Vie 27 · Black Friday</span><b>🛍️ Jersey Gardens</b><small>Luces de Saks por la noche</small></div>
+  <div class="fact"><span class="label">Sáb 28</span><b>🏒 Hockey en el MSG</b><small>12:00 · luego Brooklyn y Dyker Heights</small></div>
+  <div class="fact"><span class="label">Dom 29 · Vuelta</span><b>⛸️ Bryant Park</b><small>Vuelo a Madrid a las 21:00</small></div>
+</div>
+
+<section>
+  <h2><span class="dot"></span>Vuelos</h2>
+  <div class="flights">
+    <article class="pass">
+      <div class="pass-head"><span class="label">Ida · miércoles 25 nov</span><span class="mono">IB0325 · Iberia</span></div>
+      <div class="route">
+        <div class="end"><span class="iata">MAD</span><span class="time">16:20</span><small class="label">Terminal 4S</small></div>
+        <div class="plane">8 h 55 min</div>
+        <div class="end"><span class="iata">JFK</span><span class="time">19:15</span><small class="label">Terminal 8</small></div>
+      </div>
+      <div class="meta"><span>Check-in <b>hecho</b></span><span>Embarque <b>grupo 1</b></span></div>
+    </article>
+    <article class="pass">
+      <div class="pass-head"><span class="label">Vuelta · domingo 29 nov</span><span class="mono">IB0326 · Iberia</span></div>
+      <div class="route">
+        <div class="end"><span class="iata">JFK</span><span class="time">21:00</span><small class="label">Terminal 8</small></div>
+        <div class="plane">7 h 10 min</div>
+        <div class="end"><span class="iata">MAD</span><span class="time">10:10 <small>+1</small></span><small class="label">Terminal 4S</small></div>
+      </div>
+      <div class="meta"><span>Llega el <b>lunes 30</b></span><span>Mano <b>10 kg por persona</b></span><span>Bodega <b>de pago</b></span></div>
+    </article>
+  </div>
+</section>
+
+<section>
+  <h2><span class="dot" style="background:var(--blue)"></span>Reservas</h2>
+  <div class="bookings">
+
+    <article class="card">
+      <span class="label">Hotel</span>
+      <h3>Hotel en Chelsea</h3>
+      <dl class="rows">
+        <dt>Zona</dt><dd>Chelsea, entre la 6.ª y la 7.ª Avenida</dd>
+        <dt>Entrada</dt><dd>Mié 25 nov, desde las 16:00</dd>
+        <dt>Salida</dt><dd>Dom 29 nov, hasta las 11:00</dd>
+      </dl>
+    </article>
+
+    <article class="card">
+      <span class="label">Cena</span>
+      <h3>Anto · Korean BBQ</h3>
+      <dl class="rows">
+        <dt>Dirección</dt><dd>37 W 32nd St (Koreatown), a 5 min andando del hotel</dd>
+        <dt>Cuándo</dt><dd>Jueves 26 nov (Acción de Gracias), 19:00</dd>
+        <dt>Personas</dt><dd>6</dd>
+        <dt>Horario</dt><dd>Dom–jue 11:00–23:00 · vie–sáb 11:00–1:00</dd>
+        <dt>Teléfono</dt><dd class="mono">(212) 695-3131</dd>
+        <dt>Reserva</dt><dd><span class="chip ok">Reservado</span></dd>
+      </dl>
+      <div class="links"><a href="https://www.google.com/maps/search/?api=1&query=Anto%2C%2037%20W%2032nd%20St%2C%20New%20York" target="_blank" rel="noopener">Ver en el mapa</a><a href="https://anto.com" target="_blank" rel="noopener">anto.com</a></div>
+    </article>
+
+    <article class="card">
+      <span class="label">Hockey</span>
+      <h3>The Frozen Apple</h3>
+      <dl class="rows">
+        <dt>Partido</dt><dd>Cornell University contra University of Maine</dd>
+        <dt>Cuándo</dt><dd>Sáb 28 nov, 12:00 (hasta las 15:00 aprox.)</dd>
+        <dt>Dónde</dt><dd>Madison Square Garden, 7th Ave y calle 33, a 3 manzanas del hotel</dd>
+        <dt>Entradas</dt><dd>6</dd>
+        <dt>Asientos</dt><dd>Recomendados: sección 224, fila 17 (centro del hielo), 6 seguidos</dd>
+        <dt>Ojo</dt><dd>Llegad con tiempo: controlan todos los bolsos</dd>
+        <dt>Entradas</dt><dd><span class="chip pend">Por comprar</span></dd>
+      </dl>
+      <div class="links">
+        <a href="https://www.google.com/calendar/render?action=TEMPLATE&text=The%20Frozen%20Apple:%20Cornell%20University%20v.%20University%20of%20Maine&dates=20261128T170000Z/20261128T200000Z&location=Madison%20Square%20Garden,+New%20York,+New%20York" target="_blank" rel="noopener">Añadir a Google Calendar</a>
+        <a href="https://www.google.com/maps/search/?api=1&query=Madison%20Square%20Garden%2C%20New%20York%2C%20New%20York" target="_blank" rel="noopener">Ver en el mapa</a>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<section id="desfile">
+  <a class="back" href="#dia-26">← Volver al viaje</a>
+  <h2><span class="dot" style="background:var(--red)"></span>Dónde ver el desfile</h2>
+  <p class="parade-note">Jueves 26 · desfile número 100, de 8:30 a 12:00, desde la calle 77 por Central Park West, la calle 59 y la 6.ª Avenida hasta Herald Square. Todos los trayectos salen del hotel (Chelsea, entre la 6.ª y la 7.ª Avenida). El día del desfile no se puede cruzar la 6.ª Avenida ni Central Park West: llegad por el lado donde os vais a poner.</p>
+  <div class="parade">
+
+    <article class="spot pick">
+      <div class="spot-head"><span class="rank">1</span><h3>Central Park West, calles 61–70</h3></div>
+      <div class="facts-mini"><span>Pasa <b>9:00–10:30</b></span><span>Llegar <b>6:00–6:30</b></span><span>Gente <b>media</b></span><span>Trayecto <b>~20 min</b></span></div>
+      <ol class="route-steps">
+        <li><span class="line walk">🚶</span><span>3 min andando a la estación <b>28 St</b> (7.ª Avenida con la calle 28)</span></li>
+        <li><span class="line" style="background:var(--red)">1</span><span>Línea 1 hacia el norte (Uptown) hasta <b>66 St–Lincoln Center</b>, 6 paradas, unos 12 min</span></li>
+        <li><span class="line walk">🚶</span><span>5 min por la calle 66 hacia el este hasta Central Park West. Poneos en la <b>acera oeste</b> (la del parque es de gradas con invitación)</span></li>
+      </ol>
+      <p class="pros">✅ Hay menos gente, termina pronto y tenéis Central Park al lado con la mañana seca · ❌ Hay que madrugar</p>
+    </article>
+
+    <article class="spot">
+      <div class="spot-head"><span class="rank">2</span><h3>Calle 59, acera sur</h3></div>
+      <div class="facts-mini"><span>Pasa <b>~9:15–10:45</b></span><span>Llegar <b>6:30</b></span><span>Gente <b>media</b></span><span>Trayecto <b>~20 min</b></span></div>
+      <ol class="route-steps">
+        <li><span class="line walk">🚶</span><span>3 min andando a la estación <b>28 St</b> (7.ª Avenida)</span></li>
+        <li><span class="line" style="background:var(--red)">1</span><span>Línea 1 hacia el norte hasta <b>59 St–Columbus Circle</b>, 5 paradas, unos 10 min</span></li>
+        <li><span class="line walk">🚶</span><span>Salid por el lado sur de la calle 59 y caminad hacia el este, entre Columbus Circle y la 6.ª Avenida</span></li>
+      </ol>
+      <p class="pros">✅ Es la zona que recomienda Macy's, y tenéis el parque enfrente · ❌ El tramo es corto y se llena pronto</p>
+    </article>
+
+    <article class="spot">
+      <div class="spot-head"><span class="rank">3</span><h3>6.ª Avenida, calles 38–41</h3></div>
+      <div class="facts-mini"><span>Pasa <b>~10:00–12:00</b></span><span>Llegar <b>antes de las 7:00</b></span><span>Gente <b>alta</b></span><span>Trayecto <b>~12 min</b></span></div>
+      <ol class="route-steps">
+        <li><span class="line walk">🚶</span><span>Salid hacia la 6.ª Avenida y subid por la <b>acera oeste</b> (la del hotel) hasta la calle 38, unos 12 min. No hace falta metro</span></li>
+      </ol>
+      <p class="pros">✅ Está al lado del hotel, y los edificios cortan algo el viento · ❌ Hay más gente, pasa más tarde y a las 12:00 empieza a llover</p>
+    </article>
+
+    <article class="spot">
+      <div class="spot-head"><span class="rank">4</span><h3>6.ª Avenida, calles 55–58</h3></div>
+      <div class="facts-mini"><span>Pasa <b>~9:30–11:30</b></span><span>Llegar <b>antes de las 7:00</b></span><span>Gente <b>media-alta</b></span><span>Trayecto <b>~20 min</b></span></div>
+      <ol class="route-steps">
+        <li><span class="line walk">🚶</span><span>5 min andando a la estación <b>34 St–Herald Sq</b> (6.ª Avenida con la calle 33)</span></li>
+        <li><span class="line" style="background:var(--accent)">F</span><span>Línea F hacia el norte hasta <b>57 St</b>, 3 paradas, unos 8 min</span></li>
+        <li><span class="line walk">🚶</span><span>Salid ya en la 6.ª Avenida y elegid sitio entre las calles 55 y 58</span></li>
+      </ol>
+      <p class="pros">✅ Menos gente que entre las calles 42 y 54 · ❌ Al final del desfile coincide con el inicio de la lluvia</p>
+    </article>
+
+    <article class="spot">
+      <div class="spot-head"><span class="rank">5</span><h3>The Shops at Columbus Circle, plantas 2.ª y 3.ª</h3></div>
+      <div class="facts-mini"><span>Pasa <b>9:00–10:30</b></span><span>Llegar <b>muy pronto</b></span><span>Gente <b>alta</b></span><span>Trayecto <b>~15 min</b></span></div>
+      <ol class="route-steps">
+        <li><span class="line walk">🚶</span><span>3 min andando a la estación <b>28 St</b> (7.ª Avenida)</span></li>
+        <li><span class="line" style="background:var(--red)">1</span><span>Línea 1 hacia el norte hasta <b>59 St–Columbus Circle</b>, unos 10 min</span></li>
+        <li><span class="line walk">🚶</span><span>El centro comercial está en la misma plaza (10 Columbus Circle). Subid a las ventanas que dan a Central Park West</span></li>
+      </ol>
+      <p class="pros">✅ Bajo techo, sin viento y con vista desde arriba · ❌ Hay muy pocas plazas, y no está comprobado a qué hora abre el jueves de Acción de Gracias</p>
+    </article>
+
+  </div>
+  <p class="parade-note"><b>Evitad</b> la 6.ª Avenida entre las calles 34 y 38 y Herald Square (es la zona de la televisión). <b>Viento:</b> se esperan rachas de 60–65 km/h, y por encima de unos 55 km/h los globos pueden volar bajos o no salir. Lo deciden esa misma mañana.</p>
+</section>
+
+<section>
+  <h2><span class="dot" style="background:var(--green)"></span>Día a día</h2>
+  <div class="days">
+
+    <div class="day" data-date="2026-11-25" style="--c:var(--blue)">
+      <div class="bullet">25</div>
+      <div class="day-body">
+        <div class="day-head"><h3>Miércoles · llegada</h3><span class="today-pill">Hoy</span></div>
+        <p class="wx"><span class="ico" aria-hidden="true">☁️</span><span class="temp">7° <small>/ -1°</small></span><span>Nublado y seco</span><span class="bad">Noche muy fría: sensación de -5°</span></p>
+        <ul class="slots">
+          <li><span class="when">16:20</span><span><span class="key">Despegue de Madrid</span> <span class="note">· T4S, a las 12:20 conviene estar en el aeropuerto</span></span></li>
+          <li><span class="when">19:15</span><span><span class="key">Aterrizaje en JFK T8</span> <span class="note">· inmigración y taxi o tren al hotel</span></span></li>
+          <li><span class="when">~21:00</span><span><span class="key">Hotel y descanso</span> <span class="note">· para los niños serán las 3:00 de Madrid</span></span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="day" id="dia-26" data-date="2026-11-26" style="--c:var(--accent)">
+      <div class="bullet">26</div>
+      <div class="day-body">
+        <div class="day-head"><h3>Jueves · Acción de Gracias</h3><span class="tag">Muchas tiendas cerradas</span><span class="today-pill">Hoy</span></div>
+        <p class="wx"><span class="ico" aria-hidden="true">🌧️</span><span class="temp">14° <small>/ 6°</small></span><span>Mañana seca y con viento; lluvia fuerte desde mediodía</span><span class="bad">Rachas de 60 km/h en el desfile y de hasta 90 km/h por la tarde</span></p>
+        <ul class="slots">
+          <li><span class="when">6:00–7:00</span><span><span class="key">Coger sitio para el desfile de Macy's</span> <span class="note">· <a href="#desfile">Ver dónde ponerse y cómo ir →</a></span></span></li>
+          <li><span class="when">8:30–12:00</span><span><span class="key">Desfile de Acción de Gracias</span></span></li>
+          <li><span class="when">Tarde</span><span><span class="key">Central Park y Bow Bridge</span> <span class="note">· después, el vestíbulo del Plaza (Solo en casa 2)</span></span></li>
+          <li><span class="when">19:00</span><span><span class="key">🥩 Cena en Anto</span> <span class="note">· 37 W 32nd St, 6 personas</span></span></li>
+          <li><span class="when">Después</span><span><span class="key">Times Square iluminado</span> <span class="note">· a 15 min andando</span></span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="day" data-date="2026-11-27" style="--c:var(--red)">
+      <div class="bullet">27</div>
+      <div class="day-body">
+        <div class="day-head"><h3>Viernes · Black Friday en el outlet</h3><span class="tag">Mucha gente: madrugad</span><span class="today-pill">Hoy</span></div>
+        <p class="wx"><span class="ico" aria-hidden="true">🌥️</span><span class="temp">14° <small>/ 7°</small></span><span>Llovizna de madrugada; de día gris y casi seco, con viento</span></p>
+        <ul class="slots">
+          <li><span class="when">8:15–16:00</span><span><span class="key">🛍️ Outlet The Mills at Jersey Gardens</span></span></li>
+          <li><span class="when">Noche</span><span><span class="key">Rockefeller, Quinta Avenida y St. Patrick's</span> <span class="note">· el árbol aún sin encender, los escaparates iluminados</span></span></li>
+          <li><span class="when">Noche</span><span><span class="key">Espectáculo de luces de Saks</span> <span class="note">· enfrente del Rockefeller</span></span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="day" data-date="2026-11-28" style="--c:var(--green)">
+      <div class="bullet">28</div>
+      <div class="day-body">
+        <div class="day-head"><h3>Sábado · hockey y luces</h3><span class="today-pill">Hoy</span></div>
+        <p class="wx"><span class="ico" aria-hidden="true">☁️</span><span class="temp">10° <small>/ 7°</small></span><span>Nublado y casi seco (8 % de lluvia)</span></p>
+        <ul class="slots">
+          <li><span class="when">11:15–15:00</span><span><span class="key">🏒 Partido de hockey</span> <span class="note">· Cornell contra Maine en el Madison Square Garden · entrada a las 11:15 (controlan todos los bolsos), empieza a las 12:00</span></span></li>
+          <li><span class="when">~16:00</span><span><span class="key">Cruzar el puente de Brooklyn</span> <span class="note">· el sol se pone sobre las 16:30</span></span></li>
+          <li><span class="when">18:00–21:00</span><span><span class="key">Dyker Heights</span> <span class="note">· casas iluminadas en Brooklyn; a finales de noviembre algunas aún están a medias</span></span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="day" data-date="2026-11-29" style="--c:var(--yellow)">
+      <div class="bullet" style="color:#141b2b">29</div>
+      <div class="day-body">
+        <div class="day-head"><h3>Domingo · vuelta</h3><span class="today-pill">Hoy</span></div>
+        <p class="wx"><span class="ico" aria-hidden="true">☁️</span><span class="temp">13° <small>/ 7°</small></span><span>Nublado y seco</span></p>
+        <ul class="slots">
+          <li><span class="when">Antes de 11:00</span><span><span class="key">Salida del hotel</span> <span class="note">· podéis dejar las maletas en recepción</span></span></li>
+          <li><span class="when">11:30–13:00</span><span><span class="key">⛸️ Patinar en Bryant Park</span> <span class="note">· pista gratis (alquiler de patines aparte; conviene reservar turno en su web) · calle 42, a 15 min del hotel</span></span></li>          <li><span class="when">~17:00</span><span><span class="key">Salida hacia JFK</span> <span class="note">· es el día con más viajeros del año en EE. UU.</span></span></li>
+          <li><span class="when">21:00</span><span><span class="key">Despegue IB0326</span> <span class="note">· aterrizaje en Madrid el lunes 30 a las 10:10</span></span></li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section>
+  <h2><span class="dot" style="background:var(--red)"></span>Sitios navideños</h2>
+  <p class="parade-note">Los 14 sitios de la lista, con su dirección. La etiqueta indica si ya están en el día a día.</p>
+  <div class="xmas">
+    <div class="place"><div class="place-head"><h3>Macy's Herald Square</h3><span class="chip off">Fuera del plan</span></div><p>Escaparates navideños de la calle 34</p><span class="addr">151 W 34th St (con Broadway) · a 5 min del hotel</span><a href="https://www.google.com/maps/search/?api=1&query=Macy%27s%20Herald%20Square%2C%20151%20W%2034th%20St%2C%20New%20York" target="_blank" rel="noopener">Ver en el mapa</a></div>
+    <div class="place"><div class="place-head"><h3>Bryant Park Winter Village</h3><span class="chip ok">Dom 29</span></div><p>Casetas, algo caliente y pista de patinaje gratis</p><span class="addr">6.ª Avenida, entre las calles 40 y 42</span><a href="https://www.google.com/maps/search/?api=1&query=Bryant%20Park%20Winter%20Village%2C%20New%20York" target="_blank" rel="noopener">Ver en el mapa</a></div>
+    <div class="place"><div class="place-head"><h3>Times Square</h3><span class="chip ok">Jue 26</span></div><p>Las luces, la bola y fotos en la plaza</p><span class="addr">Broadway con la 7.ª Avenida, calles 42–47</span><a href="https://www.google.com/maps/search/?api=1&query=Times%20Square%2C%20New%20York" target="_blank" rel="noopener">Ver en el mapa</a></div>
+    <div class="place"><div class="place-head"><h3>Radio City Music Hall</h3><span class="chip off">Fuera del plan</span></div><p>Las Rockettes (con entrada) o el letrero iluminado</p><span class="addr">1260 6th Ave (con la calle 50)</span><a href="https://www.google.com/maps/search/?api=1&query=Radio%20City%20Music%20Hall%2C%201260%206th%20Ave%2C%20New%20York" target="_blank" rel="noopener">Ver en el mapa</a></div>
+    <div class="place"><div class="place-head"><h3>St. Patrick's Cathedral</h3><span class="chip ok">Vie 27</span></div><p>El interior decorado, gratis</p><span class="addr">5.ª Avenida, entre las calles 50 y 51</span><a href="https://www.google.com/maps/search/?api=1&query=St.%20Patrick%27s%20Cathedral%2C%20New%20York" target="_blank" rel="noopener">Ver en el mapa</a></div>
+    <div class="place"><div class="place-head"><h3>Saks Fifth Avenue</h3><span class="chip ok">Vie 27</span></div><p>Espectáculo de luces sobre la fachada</p><span class="addr">611 5th Ave (calles 49–50)</span><a href="https://www.google.com/maps/search/?api=1&query=Saks%20Fifth%20Avenue%2C%20611%205th%20Ave%2C%20New%20York" target="_blank" rel="noopener">Ver en el mapa</a></div>
+    <div class="place"><div class="place-head"><h3>Rockefeller Center</h3><span class="chip ok">Vie 27</span></div><p>El árbol (se enciende el 2/12), la plaza y fotos</p><span class="addr">45 Rockefeller Plaza (calles 49–50, entre la 5.ª y la 6.ª Avenida)</span><a href="https://www.google.com/maps/search/?api=1&query=Rockefeller%20Center%20Christmas%20Tree%2C%20New%20York" target="_blank" rel="noopener">Ver en el mapa</a></div>
+    <div class="place"><div class="place-head"><h3>Escaparates de la Quinta Avenida</h3><span class="chip ok">Vie 27</span></div><p>Cartier, Tiffany y el resto de tiendas</p><span class="addr">5.ª Avenida, calles 49–60 · Cartier en el 653 · Tiffany en el 727</span><a href="https://www.google.com/maps/search/?api=1&query=Tiffany%20%26%20Co%2C%20727%205th%20Ave%2C%20New%20York" target="_blank" rel="noopener">Ver en el mapa</a></div>
+    <div class="place"><div class="place-head"><h3>The Plaza Hotel</h3><span class="chip ok">Jue 26</span></div><p>El vestíbulo de Solo en casa 2</p><span class="addr">768 5th Ave (con Central Park South)</span><a href="https://www.google.com/maps/search/?api=1&query=The%20Plaza%20Hotel%2C%20768%205th%20Ave%2C%20New%20York" target="_blank" rel="noopener">Ver en el mapa</a></div>
+    <div class="place"><div class="place-head"><h3>Central Park y Bow Bridge</h3><span class="chip ok">Jue 26</span></div><p>Paseo de invierno y cruzar el puente</p><span class="addr">Bow Bridge, a la altura de la calle 74, en mitad del parque</span><a href="https://www.google.com/maps/search/?api=1&query=Bow%20Bridge%2C%20Central%20Park%2C%20New%20York" target="_blank" rel="noopener">Ver en el mapa</a></div>
+    <div class="place"><div class="place-head"><h3>Dyker Heights</h3><span class="chip ok">Sáb 28</span></div><p>Casas iluminadas, mejor de 18:00 a 21:00</p><span class="addr">Brooklyn, de la 11.ª a la 13.ª Avenida, calles 83–86 · metro D hasta 79 St o R hasta 86 St</span><a href="https://www.google.com/maps/search/?api=1&query=Dyker%20Heights%20Christmas%20Lights%2C%2084th%20St%20%26%2011th%20Ave%2C%20Brooklyn" target="_blank" rel="noopener">Ver en el mapa</a></div>
+    <div class="place"><div class="place-head"><h3>Puente de Brooklyn</h3><span class="chip ok">Sáb 28</span></div><p>Cruzarlo a pie (unos 30 min) con el skyline</p><span class="addr">Entrada peatonal en Park Row, junto a City Hall (Manhattan)</span><a href="https://www.google.com/maps/search/?api=1&query=Brooklyn%20Bridge%20Pedestrian%20Entrance%2C%20Park%20Row%2C%20New%20York" target="_blank" rel="noopener">Ver en el mapa</a></div>
+    <div class="place"><div class="place-head"><h3>New York Public Library</h3><span class="chip off">Fuera del plan</span></div><p>Entrada gratis y exposiciones navideñas</p><span class="addr">476 5th Ave (con la calle 42)</span><a href="https://www.google.com/maps/search/?api=1&query=New%20York%20Public%20Library%2C%20476%205th%20Ave%2C%20New%20York" target="_blank" rel="noopener">Ver en el mapa</a></div>
+    <div class="place"><div class="place-head"><h3>The Rink at Rockefeller Center</h3><span class="chip off">Fuera del plan</span></div><p>Pista de patinaje, alquiler de patines unos 25 $</p><span class="addr">Rockefeller Plaza, calles 49–50</span><a href="https://www.google.com/maps/search/?api=1&query=The%20Rink%20at%20Rockefeller%20Center%2C%20New%20York" target="_blank" rel="noopener">Ver en el mapa</a></div>
+  </div>
+</section>
+
+<section>
+  <h2><span class="dot" style="background:var(--yellow)"></span>Planes extra · miradores</h2>
+  <p class="parade-note">Por si os animáis. Ninguno está comprado ni metido en el plan. Precios consultados el 25/11.</p>
+  <div class="bookings">
+
+    <article class="card">
+      <span class="label">Oferta Black Friday · hasta el 30/11</span>
+      <h3>Empire State Building</h3>
+      <dl class="rows">
+        <dt>Precio</dt><dd>46 $ por persona (hasta 35 $ menos)</dd>
+        <dt>Incluye</dt><dd>Planta 86 al aire libre y museo (sin la 102)</dd>
+        <dt>Fecha</dt><dd>Entrada sin fecha, válida 365 días</dd>
+        <dt>Dónde</dt><dd>5.ª Avenida con la calle 34, a 5 min del hotel</dd>
+        <dt>Estado</dt><dd><span class="chip ok">Oferta confirmada en la web oficial</span></dd>
+      </dl>
+      <div class="links"><a href="https://www.esbnyc.com/buy-tickets/empire-state-building-black-friday-offer-flex-anytime-ticket" target="_blank" rel="noopener">Comprar entradas</a></div>
+    </article>
+
+    <article class="card">
+      <span class="label">Pack familiar</span>
+      <h3>Edge · Hudson Yards</h3>
+      <dl class="rows">
+        <dt>Precio</dt><dd>Desde 44 $ · 20 % menos con 4 entradas o más</dd>
+        <dt>Incluye</dt><dd>El mirador al aire libre más alto, con suelo de cristal</dd>
+        <dt>Dónde</dt><dd>Hudson Yards (calle 30 con la 10.ª Avenida)</dd>
+        <dt>Estado</dt><dd><span class="chip pend">El Black Friday solo aparece en redes</span></dd>
+      </dl>
+      <div class="links"><a href="https://www.edgenyc.com/" target="_blank" rel="noopener">Comprar entradas</a></div>
+    </article>
+
+    <article class="card">
+      <span class="label">Sin oferta</span>
+      <h3>Top of the Rock</h3>
+      <dl class="rows">
+        <dt>Precio</dt><dd>Desde 42 $</dd>
+        <dt>Incluye</dt><dd>Planta 70 sin cristales, con el Empire State y Central Park en la vista</dd>
+        <dt>Dónde</dt><dd>Rockefeller Center, 50 W 50th St</dd>
+      </dl>
+      <div class="links"><a href="https://www.rockefellercenter.com/tickets/top-of-the-rock-observation-deck/" target="_blank" rel="noopener">Comprar entradas</a></div>
+    </article>
+
+    <article class="card">
+      <span class="label">Sin oferta</span>
+      <h3>SUMMIT One Vanderbilt</h3>
+      <dl class="rows">
+        <dt>Precio</dt><dd>Desde unos 44 $</dd>
+        <dt>Incluye</dt><dd>Salas de espejos e instalaciones, cerrado</dd>
+        <dt>Dónde</dt><dd>Junto a Grand Central (calle 42)</dd>
+      </dl>
+      <div class="links"><a href="https://summitov.com/" target="_blank" rel="noopener">Comprar entradas</a></div>
+    </article>
+
+    <article class="card">
+      <span class="label">Sin oferta confirmada</span>
+      <h3>One World Observatory</h3>
+      <dl class="rows">
+        <dt>Precio</dt><dd>Desde unos 44 $ (dicen que a mitad de precio desde las 20:00, sin confirmar)</dd>
+        <dt>Incluye</dt><dd>El mirador más alto de la ciudad, cerrado, con vista al puerto y la Estatua de la Libertad</dd>
+        <dt>Dónde</dt><dd>World Trade Center, en el sur de Manhattan</dd>
+      </dl>
+      <div class="links"><a href="https://www.oneworldobservatory.com/" target="_blank" rel="noopener">Comprar entradas</a></div>
+    </article>
+
+  </div>
+</section>
+
+<footer>Los horarios del día a día son orientativos. Previsión del tiempo de Open-Meteo, consultada el 25/11/2026: puede cambiar.</footer>
+
+</div>
+
+<script>
+(function(){
+  try{
+    var d=new Intl.DateTimeFormat('en-CA',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+    var el=document.querySelector('.day[data-date="'+d+'"]');
+    if(el) el.classList.add('today');
+  }catch(e){}
+  function route(){
+    var desfile = location.hash === '#desfile';
+    document.body.classList.toggle('view-desfile', desfile);
+    if(desfile){ window.scrollTo(0,0); }
+    else if(location.hash){ var t=document.getElementById(location.hash.slice(1)); if(t) t.scrollIntoView(); }
+  }
+  window.addEventListener('hashchange', route);
+  route();
+})();
+</script>
+
+</body>
+</html>
